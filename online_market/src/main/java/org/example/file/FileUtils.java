@@ -2,61 +2,188 @@ package org.example.file;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.example.model.Basket;
 import org.example.model.Category;
 import org.example.model.Product;
-import org.example.service.BaseService;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileUtils {
-    static String headUrl = "src/main/java/org.example/file/";
+    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
 
-    public static void writeProductToFile(String headUrl, List<Product> productList) throws IOException {
-        List<Product> products = productList;
-        for (Product product : products) {
-            File file = new File(headUrl + "products/" + product.getId() + ".txt");
-            file.createNewFile();
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(gson.toJson(product).getBytes());
-            fileOutputStream.close();
-        }
-    }
-
-    public static void writeCategoryToFile(String headUrl, List<Category> categoryList) throws IOException {
-        for (Category category : categoryList) {
-            File file = new File(headUrl + "categories/" + category.getId() + ".txt");
-            file.createNewFile();
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(gson.toJson(category).getBytes());
-            fileOutputStream.close();
-        }
-    }
-
-    public static List<Product> readProductsFromFile() throws FileNotFoundException {
-        List<Product> productList = new ArrayList<>();
+    //    public static void writeProductToFile(String headUrl, List<Product> productList) throws IOException {
+//        List<Product> products = productList;
+//        for (Product product : products) {
+//            File file = new File(headUrl + "products/" + product.getId() + ".txt");
+//            file.createNewFile();
+//            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//            FileOutputStream fileOutputStream = new FileOutputStream(file);
+//            fileOutputStream.write(gson.toJson(product).getBytes());
+//            fileOutputStream.close();
+//        }
+//    }
+//
+//    public static void writeCategoryToFile(String headUrl, List<Category> categoryList) throws IOException {
+//        for (Category category : categoryList) {
+//            File file = new File(headUrl + "categories/" + category.getId() + ".txt");
+//            file.createNewFile();
+//            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//            FileOutputStream fileOutputStream = new FileOutputStream(file);
+//            fileOutputStream.write(gson.toJson(category).getBytes());
+//            fileOutputStream.close();
+//        }
+//    }
+//
+//    public static List<Product> readProductsFromFile() throws FileNotFoundException {
+//        List<Product> productList = new ArrayList<>();
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        File file = new File(headUrl + "products");
+//        for (File file1 : file.listFiles()) {
+//            if (file1 != null) {
+//                productList.add(gson.fromJson(new FileReader(file1), Product.class));
+//            }
+//        }
+//        return productList;
+//    }
+//
+//    public static List<Category> readCategoriesFromFile() throws FileNotFoundException {
+//        List<Category> categories = new ArrayList<>();
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        File file = new File(headUrl + "categories");
+//        for (File file1 : file.listFiles()) {
+//            if (file1 != null) {
+//                categories.add(gson.fromJson(new FileReader(file1), Category.class));
+//            }
+//        }
+//        return categories;
+//    }
+    public static Category writeCategoryToFile(Category category, String headUrl) throws IOException {
+        File file = new File(headUrl + "categories/" + category.getId());
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(gson.toJson(category).getBytes());
+        fileOutputStream.close();
+        return category;
+    }
+
+    public static Product writeProductToFile(Product product, String headUrl) throws IOException {
+        File file = new File(headUrl + "products/" + product.getId());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(gson.toJson(product).getBytes());
+        fileOutputStream.close();
+        return product;
+    }
+
+    public static Product readProductFromFile(int id) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file1 = new File(headUrl + "products");
+        for (File file : file1.listFiles()) {
+            if (file.getName().equals(String.valueOf(id))) {
+                FileReader fileReader = new FileReader(file);
+                return gson.fromJson(fileReader, Product.class);
+            }
+        }
+        return null;
+    }
+
+    public static Category readCategoryFromFile(int id) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file1 = new File(headUrl + "categories");
+        for (File file : file1.listFiles()) {
+            if (file.getName().equals(String.valueOf(id))) {
+                FileReader fileReader = new FileReader(file);
+                return gson.fromJson(fileReader, Category.class);
+            }
+        }
+        return null;
+    }
+
+    public static boolean deleteProductFile(int id, String headUrl) {
+        File file1 = new File(headUrl + "products");
+        for (File file : file1.listFiles()) {
+            if (file.getName().equals(String.valueOf(id))) {
+                file.delete();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean deleteCategoryFile(int id, String headUrl) {
+        File file1 = new File(headUrl + "categories");
+        for (File file : file1.listFiles()) {
+            if (file.getName().equals(String.valueOf(id))) {
+                file.delete();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static List<Product> getProductList(String headUrl) throws IOException {
+        List<Product> products = new ArrayList<>();
         File file = new File(headUrl + "products");
-        for (File file1 : file.listFiles()) {
-            if (file1 != null) {
-                productList.add(gson.fromJson(new FileReader(file1), Product.class));
-            }
+        for (String s : file.list()) {
+            products.add(readProductFromFile(Integer.parseInt(s)));
         }
-        return productList;
+        return products;
     }
 
-    public static List<Category> readCategoriesFromFile() throws FileNotFoundException {
+    public static List<Category> getCategoryList(String headUrl) throws IOException {
         List<Category> categories = new ArrayList<>();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File(headUrl + "categories");
-        for (File file1 : file.listFiles()) {
-            if (file1 != null) {
-                categories.add(gson.fromJson(new FileReader(file1), Category.class));
-            }
+        for (String s : file.list()) {
+            categories.add(readCategoryFromFile(Integer.parseInt(s)));
         }
         return categories;
     }
+
+    public static Basket readBasketFromFile(int chatId) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file1 = new File(headUrl + "baskets");
+        for (File file : file1.listFiles()) {
+            if (file.getName().equals(String.valueOf(chatId))) {
+                FileReader fileReader = new FileReader(file);
+                return gson.fromJson(fileReader, Basket.class);
+            }
+        }
+        return null;
+    }
+
+    public static Basket writeBasketToFile(Basket basket, String headUrl) throws IOException {
+        File file = new File(headUrl + "baskets/" + basket.getChatId());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(gson.toJson(basket).getBytes());
+        fileOutputStream.close();
+        return basket;
+    }
+
+    public static List<Basket> getBasketList(String headUrl) throws IOException {
+        List<Basket> baskets = new ArrayList<>();
+        File file = new File(headUrl + "baskets");
+        for (String s : file.list()) {
+            baskets.add(readBasketFromFile(Integer.parseInt(s)));
+        }
+        return baskets;
+    }
+
+    public static int readIdFromFile(String headUrl) throws IOException {
+        File file = new File(headUrl + "id.txt");
+        BufferedReader reader=new BufferedReader(new FileReader(file));
+        int i = Integer.parseInt(reader.readLine());
+        reader.close();
+        return i;
+    }
+    public static void writeIdToFile(int id) throws IOException {
+        File file = new File(headUrl + "id.txt");
+        FileWriter fileWriter=new FileWriter(file);
+        fileWriter.write(String.valueOf(id));
+        fileWriter.close();
+    }
+
+
 }

@@ -1,8 +1,8 @@
 package org.example;
 
+import org.example.file.FileUtils;
 import org.example.model.Category;
 import org.example.model.Product;
-import org.example.service.BaseService;
 import org.example.service.CategoryService;
 import org.example.service.ProductService;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    static String headUrl = "src/main/java/org.example/file/";
+    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
     static ProductService productService = new ProductService();
     static CategoryService categoryService = new CategoryService();
 
-    public static void main(String[] args) throws TelegramApiException {
+    public static void main(String[] args) throws TelegramApiException, IOException {
 //        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 //        telegramBotsApi.registerBot(new MyBot());
         while (true) {
@@ -35,7 +35,7 @@ public class Main {
         }
     }
 
-    private static void forProduct() {
+    private static void forProduct() throws IOException {
 
         while (true) {
             System.out.println("1.ADD 2.DELETE 3.UPDATE 4.LIST 0.BACK");
@@ -57,7 +57,7 @@ public class Main {
                     System.out.println(productService.update(product));
                 }
                 case 4 -> {
-                    System.out.println(BaseService.products);
+                    System.out.println(FileUtils.getProductList(headUrl));
                 }
 
             }
@@ -65,7 +65,7 @@ public class Main {
 
     }
 
-    private static void forCategory() {
+    private static void forCategory() throws IOException {
         while (true) {
             System.out.println("1.ADD 2.DELETE 3.LIST 0.BACK");
             int var = new Scanner(System.in).nextInt();
@@ -85,7 +85,7 @@ public class Main {
                     System.out.println(categoryService.delete(new Scanner(System.in).nextInt()));
                 }
                 case 3 -> {
-                    System.out.println(BaseService.categories);
+                    System.out.println(FileUtils.getCategoryList(headUrl));
                 }
 
             }

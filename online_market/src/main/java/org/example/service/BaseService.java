@@ -17,10 +17,4 @@ public interface BaseService<T, R> {
     R getById(int id);
 
     R update(T t);
-
-    List<Basket> baskets = new ArrayList<>();
-
-    List<Product> products=new ArrayList<>();
-    List<Category> categories=new ArrayList<>();
-
 }

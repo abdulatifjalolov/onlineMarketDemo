@@ -1,36 +1,48 @@
 package org.example.service;
 
+import org.example.file.FileUtils;
 import org.example.model.Basket;
 
+import java.io.File;
+import java.io.IOException;
+
 public class BasketService implements BaseService<Basket, Basket> {
+    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
     @Override
     public Basket add(Basket basket) {
-        for (Basket basket1 : baskets) {
-            if (basket1.getChatId() == basket.getChatId()) {
-                return null;
+        try {
+            for (Basket basket1 : FileUtils.getBasketList(headUrl)) {
+                if (basket1.getChatId() == basket.getChatId()) {
+                    return null;
+                }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        baskets.add(basket);
+//        baskets.add(basket);
+        try {
+            FileUtils.writeBasketToFile(basket, headUrl);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return basket;
     }
 
     @Override
     public boolean delete(int id) {
-        for (Basket basket1 : baskets) {
-            if (basket1.getChatId() == id) {
-                baskets.remove(basket1);
-                return true;
-            }
-        }
         return false;
     }
 
     @Override
     public Basket getById(int id) {
-        for (Basket basket1 : baskets) {
-            if (basket1.getChatId() == id) {
-                return basket1;
+        try {
+            for (Basket basket1 : FileUtils.getBasketList(headUrl)) {
+                if (basket1.getChatId() == id) {
+                    return basket1;
+                }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }
