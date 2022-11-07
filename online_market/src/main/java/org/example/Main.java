@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.file.CategoryFile.CategoryToFile;
 import org.example.model.Category;
 import org.example.model.Product;
 import org.example.service.BaseService;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    static String headUrl = "src/main/java/org.example/file/";
+    static String headUrl = "MyFile/";
     static ProductService productService = new ProductService();
     static CategoryService categoryService = new CategoryService();
 
@@ -46,6 +47,7 @@ public class Main {
                 case 1 -> {
                     Product product = new Product();
                     System.out.println(productService.add(product));
+
                 }
                 case 2 -> {
                     System.out.println("ENTER ID");
@@ -65,7 +67,7 @@ public class Main {
 
     }
 
-    private static void forCategory() {
+    private static void forCategory()  {
         while (true) {
             System.out.println("1.ADD 2.DELETE 3.LIST 0.BACK");
             int var = new Scanner(System.in).nextInt();
@@ -78,7 +80,11 @@ public class Main {
                     category.setName(new Scanner(System.in).nextLine());
                     System.out.println("ENTER PARENT ID");
                     category.setParentId(new Scanner(System.in).nextInt());
-                    System.out.println(categoryService.add(category));
+                    try {
+                        System.out.println(CategoryToFile.addCategory(category,headUrl));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 case 2 -> {
                     System.out.println("ENTER ID");

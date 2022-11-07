@@ -1,10 +1,13 @@
 package org.example.service;
 
+import org.example.file.FileUtils;
 import org.example.model.Category;
 
+import java.io.IOException;
 import java.util.List;
 
 public class CategoryService implements BaseService<Category, Category> {
+    static String headUrl = "src/main/java/org.example/file/";
     @Override
     public Category add(Category category) {
         for (Category category1 : BaseService.categories) {
@@ -13,6 +16,11 @@ public class CategoryService implements BaseService<Category, Category> {
             }
         }
         BaseService.categories.add(category);
+        try {
+            FileUtils.writeCategoryToFile(headUrl,BaseService.categories);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return category;
     }
 
