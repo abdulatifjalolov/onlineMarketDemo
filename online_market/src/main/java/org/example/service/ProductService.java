@@ -10,27 +10,27 @@ import java.util.stream.Collectors;
 public class ProductService implements BaseService<Product, Product> {
 
     public List<Product> getProductsOfCategory(int categoryID){
-        return BaseService.getProducts().stream()
+        return BaseService.products.stream()
                 .filter(item -> item.getCategoryId()==categoryID)
                 .toList();
     }
     @Override
     public Product add(Product product) {
         product=ProductDto.addProduct(product);
-        for (Product product2 : BaseService.getProducts()) {
+        for (Product product2 : products) {
             if (product2.getName().equals(product.getName())) {
                 return null;
             }
         }
-        BaseService.getProducts().add(product);
+        products.add(product);
         return product;
     }
 
     @Override
     public boolean delete(int id) {
-        for (Product product : BaseService.getProducts()) {
+        for (Product product : products) {
             if (product.getId() == id) {
-                BaseService.getProducts().remove(product);
+                products.remove(product);
                 return true;
             }
         }
@@ -40,7 +40,7 @@ public class ProductService implements BaseService<Product, Product> {
 
     @Override
     public Product getById(int id) {
-        for (Product product : BaseService.getProducts()) {
+        for (Product product : products) {
             if (product.getId() == id) {
                 return product;
             }
@@ -50,7 +50,7 @@ public class ProductService implements BaseService<Product, Product> {
 
     @Override
     public Product update(Product product) {
-        for (Product product2 : BaseService.getProducts()) {
+        for (Product product2 : products) {
             if (product2.getName().equals(product.getName())) {
                 product = ProductDto.update(product2);
                 return product;

@@ -14,7 +14,7 @@ public class FileUtils {
     static String headUrl = "src/main/java/org.example/file/";
 
     public static void writeProductToFile(String headUrl, List<Product> productList) throws IOException {
-        List<Product> products = BaseService.getProducts();
+        List<Product> products = productList;
         for (Product product : products) {
             File file = new File(headUrl + "products/" + product.getId() + ".txt");
             file.createNewFile();
@@ -40,24 +40,21 @@ public class FileUtils {
         List<Product> productList = new ArrayList<>();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File(headUrl + "products");
-        if (file.listFiles().length>0) {
-            for (File file1 : file.listFiles()) {
-                if (file1 != null) {
-                    productList.add(gson.fromJson(new FileReader(file1), Product.class));
-                }
+        for (File file1 : file.listFiles()) {
+            if (file1 != null) {
+                productList.add(gson.fromJson(new FileReader(file1), Product.class));
             }
         }
         return productList;
     }
+
     public static List<Category> readCategoriesFromFile() throws FileNotFoundException {
-        List<Category> categories=new ArrayList<>();
+        List<Category> categories = new ArrayList<>();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File(headUrl + "categories");
-        if (file.listFiles().length>0){
-            for (File file1 : file.listFiles()) {
-                if (file1 != null) {
-                    categories.add(gson.fromJson(new FileReader(file1), Category.class));
-                }
+        for (File file1 : file.listFiles()) {
+            if (file1 != null) {
+                categories.add(gson.fromJson(new FileReader(file1), Category.class));
             }
         }
         return categories;

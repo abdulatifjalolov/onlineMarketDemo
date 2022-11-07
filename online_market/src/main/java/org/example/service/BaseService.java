@@ -20,24 +20,7 @@ public interface BaseService<T, R> {
 
     List<Basket> baskets = new ArrayList<>();
 
-    static List<Product> getProducts() {
-        List<Product> productList;
-        try {
-            productList = FileUtils.readProductsFromFile();
-        } catch (FileNotFoundException e) {
-            productList = null;
-        }
-        return productList;
-    }
-
-    static List<Category> getCategories() {
-        List<Category> categoryList;
-        try {
-            categoryList = FileUtils.readCategoriesFromFile();
-        } catch (FileNotFoundException e) {
-            categoryList = null;
-        }
-        return categoryList;
-    }
+    List<Product> products=new ArrayList<>();
+    List<Category> categories=new ArrayList<>();
 
 }

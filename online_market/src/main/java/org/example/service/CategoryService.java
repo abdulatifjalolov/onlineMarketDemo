@@ -7,20 +7,20 @@ import java.util.List;
 public class CategoryService implements BaseService<Category, Category> {
     @Override
     public Category add(Category category) {
-        for (Category category1 : BaseService.getCategories()) {
+        for (Category category1 : BaseService.categories) {
             if (category1.getName().equals(category.getName())){
                 return null;
             }
         }
-        BaseService.getCategories().add(category);
+        BaseService.categories.add(category);
         return category;
     }
 
     @Override
     public boolean delete(int id) {
-        for (Category category : BaseService.getCategories()) {
+        for (Category category : BaseService.categories) {
             if (category.getId() == id){
-                BaseService.getCategories().remove(category);
+                BaseService.categories.remove(category);
                 return true;
             }
         }
@@ -29,7 +29,7 @@ public class CategoryService implements BaseService<Category, Category> {
 
     @Override
     public Category getById(int id) {
-        for (Category category : BaseService.getCategories()) {
+        for (Category category : BaseService.categories) {
             if (category.getId() == id){
                 return category;
             }
@@ -38,7 +38,7 @@ public class CategoryService implements BaseService<Category, Category> {
     }
 
     public List<Category> getInnerCategories(int parentId) {
-        List<Category> list = BaseService.getCategories().stream().filter(item -> item.getParentId() == parentId).toList();
+        List<Category> list = BaseService.categories.stream().filter(item -> item.getParentId() == parentId).toList();
         return list.size() != 0 ? list : null;
     }
 
