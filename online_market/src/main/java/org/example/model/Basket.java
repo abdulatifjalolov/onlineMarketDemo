@@ -1,4 +1,16 @@
 package org.example.model;
 
-public class Basket {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.util.List;
+
+@NoArgsConstructor
+@Data
+@AllArgsConstructor
+public class Basket{
+    private List<Integer> productIdList;
+    private Long chatId;
 }
