@@ -8,20 +8,20 @@ import java.io.IOException;
 
 @Data
 public abstract class Base {
-    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
     private static int idGeneration;
 
     static {
         try {
-            idGeneration = FileUtils.readIdFromFile(headUrl);
+            idGeneration = FileUtils.readIdFromFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private  int id;
+    private int id;
+
     public Base() {
-        this.id=idGeneration++;
+        this.id = idGeneration++;
         try {
             FileUtils.writeIdToFile(id);
         } catch (IOException e) {

@@ -11,13 +11,10 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
     static ProductService productService = new ProductService();
     static CategoryService categoryService = new CategoryService();
 
     public static void main(String[] args) throws TelegramApiException, IOException {
-//        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-//        telegramBotsApi.registerBot(new MyBot());
         while (true) {
             System.out.println(" 1.CATEGORY  2.PRODUCT 0.BACK");
             int var = new Scanner(System.in).nextInt();
@@ -26,7 +23,6 @@ public class Main {
             switch (var) {
                 case 1 -> {
                     forCategory();
-
                 }
                 case 2 -> {
                     forProduct();
@@ -57,7 +53,7 @@ public class Main {
                     System.out.println(productService.update(product));
                 }
                 case 4 -> {
-                    System.out.println(FileUtils.getProductList(headUrl));
+                    System.out.println(FileUtils.getProductList());
                 }
 
             }
@@ -85,7 +81,7 @@ public class Main {
                     System.out.println(categoryService.delete(new Scanner(System.in).nextInt()));
                 }
                 case 3 -> {
-                    System.out.println(FileUtils.getCategoryList(headUrl));
+                    System.out.println(FileUtils.getCategoryList());
                 }
 
             }

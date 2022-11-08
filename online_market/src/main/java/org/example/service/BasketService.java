@@ -7,11 +7,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class BasketService implements BaseService<Basket, Basket> {
-    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
     @Override
     public Basket add(Basket basket) {
         try {
-            for (Basket basket1 : FileUtils.getBasketList(headUrl)) {
+            for (Basket basket1 : FileUtils.getBasketList()) {
                 if (basket1.getChatId() == basket.getChatId()) {
                     return null;
                 }
@@ -21,7 +20,7 @@ public class BasketService implements BaseService<Basket, Basket> {
         }
 //        baskets.add(basket);
         try {
-            FileUtils.writeBasketToFile(basket, headUrl);
+            FileUtils.writeBasketToFile(basket);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -36,7 +35,7 @@ public class BasketService implements BaseService<Basket, Basket> {
     @Override
     public Basket getById(int id) {
         try {
-            for (Basket basket1 : FileUtils.getBasketList(headUrl)) {
+            for (Basket basket1 : FileUtils.getBasketList()) {
                 if (basket1.getChatId() == id) {
                     return basket1;
                 }

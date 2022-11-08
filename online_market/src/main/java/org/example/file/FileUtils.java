@@ -13,53 +13,7 @@ import java.util.List;
 public class FileUtils {
     static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
 
-    //    public static void writeProductToFile(String headUrl, List<Product> productList) throws IOException {
-//        List<Product> products = productList;
-//        for (Product product : products) {
-//            File file = new File(headUrl + "products/" + product.getId() + ".txt");
-//            file.createNewFile();
-//            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//            FileOutputStream fileOutputStream = new FileOutputStream(file);
-//            fileOutputStream.write(gson.toJson(product).getBytes());
-//            fileOutputStream.close();
-//        }
-//    }
-//
-//    public static void writeCategoryToFile(String headUrl, List<Category> categoryList) throws IOException {
-//        for (Category category : categoryList) {
-//            File file = new File(headUrl + "categories/" + category.getId() + ".txt");
-//            file.createNewFile();
-//            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//            FileOutputStream fileOutputStream = new FileOutputStream(file);
-//            fileOutputStream.write(gson.toJson(category).getBytes());
-//            fileOutputStream.close();
-//        }
-//    }
-//
-//    public static List<Product> readProductsFromFile() throws FileNotFoundException {
-//        List<Product> productList = new ArrayList<>();
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        File file = new File(headUrl + "products");
-//        for (File file1 : file.listFiles()) {
-//            if (file1 != null) {
-//                productList.add(gson.fromJson(new FileReader(file1), Product.class));
-//            }
-//        }
-//        return productList;
-//    }
-//
-//    public static List<Category> readCategoriesFromFile() throws FileNotFoundException {
-//        List<Category> categories = new ArrayList<>();
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        File file = new File(headUrl + "categories");
-//        for (File file1 : file.listFiles()) {
-//            if (file1 != null) {
-//                categories.add(gson.fromJson(new FileReader(file1), Category.class));
-//            }
-//        }
-//        return categories;
-//    }
-    public static Category writeCategoryToFile(Category category, String headUrl) throws IOException {
+    public static Category writeCategoryToFile(Category category) throws IOException {
         File file = new File(headUrl + "categories/" + category.getId());
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -68,7 +22,7 @@ public class FileUtils {
         return category;
     }
 
-    public static Product writeProductToFile(Product product, String headUrl) throws IOException {
+    public static Product writeProductToFile(Product product) throws IOException {
         File file = new File(headUrl + "products/" + product.getId());
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -101,7 +55,7 @@ public class FileUtils {
         return null;
     }
 
-    public static boolean deleteProductFile(int id, String headUrl) {
+    public static boolean deleteProductFile(int id) {
         File file1 = new File(headUrl + "products");
         for (File file : file1.listFiles()) {
             if (file.getName().equals(String.valueOf(id))) {
@@ -112,7 +66,7 @@ public class FileUtils {
         return false;
     }
 
-    public static boolean deleteCategoryFile(int id, String headUrl) {
+    public static boolean deleteCategoryFile(int id) {
         File file1 = new File(headUrl + "categories");
         for (File file : file1.listFiles()) {
             if (file.getName().equals(String.valueOf(id))) {
@@ -123,7 +77,7 @@ public class FileUtils {
         return false;
     }
 
-    public static List<Product> getProductList(String headUrl) throws IOException {
+    public static List<Product> getProductList() throws IOException {
         List<Product> products = new ArrayList<>();
         File file = new File(headUrl + "products");
         for (String s : file.list()) {
@@ -132,7 +86,7 @@ public class FileUtils {
         return products;
     }
 
-    public static List<Category> getCategoryList(String headUrl) throws IOException {
+    public static List<Category> getCategoryList() throws IOException {
         List<Category> categories = new ArrayList<>();
         File file = new File(headUrl + "categories");
         for (String s : file.list()) {
@@ -153,7 +107,7 @@ public class FileUtils {
         return null;
     }
 
-    public static Basket writeBasketToFile(Basket basket, String headUrl) throws IOException {
+    public static Basket writeBasketToFile(Basket basket) throws IOException {
         File file = new File(headUrl + "baskets/" + basket.getChatId());
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -162,7 +116,7 @@ public class FileUtils {
         return basket;
     }
 
-    public static List<Basket> getBasketList(String headUrl) throws IOException {
+    public static List<Basket> getBasketList() throws IOException {
         List<Basket> baskets = new ArrayList<>();
         File file = new File(headUrl + "baskets");
         for (String s : file.list()) {
@@ -171,16 +125,17 @@ public class FileUtils {
         return baskets;
     }
 
-    public static int readIdFromFile(String headUrl) throws IOException {
+    public static int readIdFromFile() throws IOException {
         File file = new File(headUrl + "id.txt");
-        BufferedReader reader=new BufferedReader(new FileReader(file));
+        BufferedReader reader = new BufferedReader(new FileReader(file));
         int i = Integer.parseInt(reader.readLine());
         reader.close();
         return i;
     }
+
     public static void writeIdToFile(int id) throws IOException {
         File file = new File(headUrl + "id.txt");
-        FileWriter fileWriter=new FileWriter(file);
+        FileWriter fileWriter = new FileWriter(file);
         fileWriter.write(String.valueOf(id));
         fileWriter.close();
     }

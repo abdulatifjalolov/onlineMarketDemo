@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProductService implements BaseService<Product, Product> {
-    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
 
     public List<Product> getProductsOfCategory(int categoryID) throws IOException {
-        return FileUtils.getProductList(headUrl).stream()
+        return FileUtils.getProductList().stream()
                 .filter(item -> item.getCategoryId() == categoryID)
                 .toList();
     }
@@ -23,7 +22,7 @@ public class ProductService implements BaseService<Product, Product> {
     public Product add(Product product) {
         product = ProductDto.addProduct(product);
         try {
-            for (Product product2 : FileUtils.getProductList(headUrl)) {
+            for (Product product2 : FileUtils.getProductList()) {
                 if (product2.getName().equals(product.getName())) {
                     return null;
                 }
@@ -33,7 +32,7 @@ public class ProductService implements BaseService<Product, Product> {
         }
 //        products.add(product);
         try {
-            return FileUtils.writeProductToFile(product, headUrl);
+            return FileUtils.writeProductToFile(product);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -42,10 +41,10 @@ public class ProductService implements BaseService<Product, Product> {
     @Override
     public boolean delete(int id) {
         try {
-            for (Product product : FileUtils.getProductList(headUrl)) {
+            for (Product product : FileUtils.getProductList()) {
                 if (product.getId() == id) {
                     //                products.remove(product);
-                    return FileUtils.deleteProductFile(id, headUrl);
+                    return FileUtils.deleteProductFile(id);
                 }
             }
         } catch (IOException e) {
@@ -57,7 +56,7 @@ public class ProductService implements BaseService<Product, Product> {
     @Override
     public Product getById(int id) {
         try {
-            for (Product product : FileUtils.getProductList(headUrl)) {
+            for (Product product : FileUtils.getProductList()) {
                 if (product.getId() == id) {
                     return product;
                 }
@@ -71,10 +70,10 @@ public class ProductService implements BaseService<Product, Product> {
     @Override
     public Product update(Product product) {
         try {
-            for (Product product2 : FileUtils.getProductList(headUrl)) {
+            for (Product product2 : FileUtils.getProductList()) {
                 if (product2.getName().equals(product.getName())) {
                     product = ProductDto.update(product2);
-                    return FileUtils.writeProductToFile(product, headUrl);
+                    return FileUtils.writeProductToFile(product);
                 }
             }
         } catch (IOException e) {

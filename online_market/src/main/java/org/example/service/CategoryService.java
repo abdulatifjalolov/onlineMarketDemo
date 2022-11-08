@@ -7,12 +7,11 @@ import java.io.IOException;
 import java.util.List;
 
 public class CategoryService implements BaseService<Category, Category> {
-    static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
 
     @Override
     public Category add(Category category) {
         try {
-            for (Category category1 : FileUtils.getCategoryList(headUrl)) {
+            for (Category category1 : FileUtils.getCategoryList()) {
                 if (category1.getName().equals(category.getName())) {
                     return null;
                 }
@@ -21,7 +20,7 @@ public class CategoryService implements BaseService<Category, Category> {
             throw new RuntimeException(e);
         }
         try {
-            FileUtils.writeCategoryToFile(category, headUrl);
+            FileUtils.writeCategoryToFile(category);
             return category;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -32,10 +31,10 @@ public class CategoryService implements BaseService<Category, Category> {
     @Override
     public boolean delete(int id) {
         try {
-            for (Category category : FileUtils.getCategoryList(headUrl)) {
+            for (Category category : FileUtils.getCategoryList()) {
                 if (category.getId() == id) {
                     //                BaseService.categories.remove(category);
-                    System.out.println(FileUtils.deleteCategoryFile(id, headUrl));
+                    System.out.println(FileUtils.deleteCategoryFile(id));
                 }
             }
         } catch (IOException e) {
@@ -47,7 +46,7 @@ public class CategoryService implements BaseService<Category, Category> {
     @Override
     public Category getById(int id) {
         try {
-            for (Category category : FileUtils.getCategoryList(headUrl)) {
+            for (Category category : FileUtils.getCategoryList()) {
                 if (category.getId() == id) {
                     return category;
                 }
@@ -59,7 +58,7 @@ public class CategoryService implements BaseService<Category, Category> {
     }
 
     public List<Category> getInnerCategories(int parentId) throws IOException {
-        List<Category> list = FileUtils.getCategoryList(headUrl).stream().filter(item -> item.getParentId() == parentId).toList();
+        List<Category> list = FileUtils.getCategoryList().stream().filter(item -> item.getParentId() == parentId).toList();
         return list.size() != 0 ? list : null;
     }
 
