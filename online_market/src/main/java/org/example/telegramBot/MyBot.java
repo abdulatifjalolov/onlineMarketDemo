@@ -1,6 +1,7 @@
 package org.example.telegramBot;
 
 import org.example.file.FileUtils;
+import org.example.telegramBot.BotConstants;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

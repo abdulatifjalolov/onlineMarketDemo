@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product extends Base{
+public class Product extends Base {
     private String name;
     private String brand;
     private double price;

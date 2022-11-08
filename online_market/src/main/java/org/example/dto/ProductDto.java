@@ -1,5 +1,6 @@
 package org.example.dto;
 
+
 import org.example.model.Product;
 
 import java.util.Scanner;

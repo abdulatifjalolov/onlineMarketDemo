@@ -1,5 +1,6 @@
 package org.example;
 
+
 import org.example.file.FileUtils;
 import org.example.model.Category;
 import org.example.model.Product;
@@ -19,7 +20,7 @@ public class Main {
 
     public static void main(String[] args) throws TelegramApiException, IOException {
         TelegramBotsApi telegramBotsApi=new TelegramBotsApi(DefaultBotSession.class);
-        telegramBotsApi.registerBot(new MyBot());
+    telegramBotsApi.registerBot(new MyBot());
         while (true) {
             System.out.println(" 1.CATEGORY  2.PRODUCT 0.BACK");
             int var = new Scanner(System.in).nextInt();
