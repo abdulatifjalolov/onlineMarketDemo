@@ -4,11 +4,8 @@ import org.example.dto.ProductDto;
 import org.example.file.FileUtils;
 import org.example.model.Product;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProductService implements BaseService<Product, Product> {
 

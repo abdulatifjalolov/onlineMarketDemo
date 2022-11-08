@@ -3,7 +3,6 @@ package org.example.service;
 import org.example.file.FileUtils;
 import org.example.model.Basket;
 
-import java.io.File;
 import java.io.IOException;
 
 public class BasketService implements BaseService<Basket, Basket> {

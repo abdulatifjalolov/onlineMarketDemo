@@ -24,7 +24,7 @@ public class ProductDto {
         System.out.println(" ENTER DISCOUNT OF PRODUCT (%)");
         product.setDiscount(new Scanner(System.in).nextInt());
 
-        System.out.println("ENTER CATEGORY OF PRODUCT");
+        System.out.println("ENTER CATEGORY ID OF PRODUCT");
         product.setDiscount(new Scanner(System.in).nextInt());
 
         return product;

@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface BotService {
     List<TelegramUser> TELEGRAM_USERS=new ArrayList<>();
+
 }

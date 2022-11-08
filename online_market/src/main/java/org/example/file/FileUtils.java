@@ -5,13 +5,42 @@ import com.google.gson.GsonBuilder;
 import org.example.model.Basket;
 import org.example.model.Category;
 import org.example.model.Product;
+import org.example.telegramBot.TelegramUser;
+import org.telegram.telegrambots.meta.api.objects.Contact;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.CheckedOutputStream;
 
 public class FileUtils {
     static String headUrl = "C:/Users/abdulatif/forJAVA/online_market/";
+
+    public static TelegramUser writeUsersToFile(Contact contact) throws IOException {
+        TelegramUser user =new TelegramUser();
+        user.setUserId(contact.getUserId());
+        user.setFirstName(contact.getFirstName());
+        user.setPhoneNumber(contact.getPhoneNumber());
+        File file = new File(headUrl + "users/" + user.getUserId());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        FileWriter fileWriter =new FileWriter(file);
+        fileWriter.write(gson.toJson(user));
+        fileWriter.close();
+        return user;
+    }
+    public static TelegramUser readUserFromFile(Long userId) throws FileNotFoundException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(headUrl + "users");
+        for (File listFile : file.listFiles()) {
+            if (listFile.getName().equals(String.valueOf(userId))) {
+                FileReader fileReader = new FileReader(listFile);
+                BufferedReader bufferedReader =new BufferedReader(fileReader);
+                TelegramUser telegramUser = gson.fromJson(bufferedReader, TelegramUser.class);
+                return telegramUser;
+            }
+        }
+        return null;
+    }
 
     public static Category writeCategoryToFile(Category category) throws IOException {
         File file = new File(headUrl + "categories/" + category.getId());

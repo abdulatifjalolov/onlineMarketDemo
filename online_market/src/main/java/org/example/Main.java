@@ -5,7 +5,10 @@ import org.example.model.Category;
 import org.example.model.Product;
 import org.example.service.CategoryService;
 import org.example.service.ProductService;
+import org.example.telegramBot.MyBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -15,6 +18,8 @@ public class Main {
     static CategoryService categoryService = new CategoryService();
 
     public static void main(String[] args) throws TelegramApiException, IOException {
+        TelegramBotsApi telegramBotsApi=new TelegramBotsApi(DefaultBotSession.class);
+        telegramBotsApi.registerBot(new MyBot());
         while (true) {
             System.out.println(" 1.CATEGORY  2.PRODUCT 0.BACK");
             int var = new Scanner(System.in).nextInt();
