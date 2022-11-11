@@ -7,6 +7,8 @@ public interface BotConstants {
     String USERNAME = "@valyutaKonvertirOnlinebot";
     String MAIN_MENU = "MAIN MENU\uD83E\uDDFE";
     String SHARE_CONTACT = "\uD83D\uDCDESHARE CONTACT\uD83D\uDCDE";
+    String SHARE_LOCATION = "\uD83D\uDCCDSHARE LOCATION\uD83D\uDCCD";
+
     String BASKET = "BASKET\uD83D\uDED2";
     String ALL_CATEGORIES = "ALL CATEGORIES ⌚ \uD83D\uDCF1 \uD83D\uDCBB";
     String CATEGORIES = "CATEGORIES⬇";
@@ -19,7 +21,8 @@ public interface BotConstants {
     String BACK = "BACK\uD83D\uDD19";
     String WELCOME = "WELCOME TO OUR BOT";
     int COUNT_BUTTONS = 3;
-
+    String BUY = "BUY\uD83D\uDCB5";
+    String DELETE_FROM_BASKET = "DELETE FROM BASKET\uD83D\uDDD1";
 
     String NOTEBOOK = "NOTEBOOK\uD83D\uDCBB";
     String TELEPHONE = "TELEPHONE\uD83D\uDCF1";

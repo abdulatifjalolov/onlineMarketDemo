@@ -10,6 +10,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -51,11 +52,11 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         } else if (update.hasCallbackQuery()) {
             String data = update.getCallbackQuery().getData();
             Long chatId = update.getCallbackQuery().getMessage().getChatId();
+            System.out.println(data);
             if (data.length() >= 7 && data.charAt(0) == '/') {
                 String basket = data.substring(0, 7);
                 if (basket.equals("/basket")) {
                     int productId = Integer.parseInt(data.substring(7));
-
                     try {
                         addProductToBasket(productId, chatId);
                         DataBase.writeBasketListToFile(basketList);
@@ -65,12 +66,35 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
                     }
 
                 }
-            }  else if (data.charAt(0)=='C'&&data.charAt(1)=='L') {
+            } else if (data.charAt(0) == 'C' && data.charAt(1) == 'L') {
+                //  sendMessage(null, inlineKeyboardMarkup, "PRODUCTS LIST", chatId);
                 InlineKeyboardMarkup inlineKeyboardMarkup = categoryOrProduct(update.getCallbackQuery(), chatId);
-                sendMessage(null, inlineKeyboardMarkup, "CHOOSE ONE FOR TAKE MORE INFO ABOUT PRODUCT", chatId);
-            }else {
+                editMethod(chatId, update.getCallbackQuery().getMessage().getMessageId(), inlineKeyboardMarkup);
+            } else if (data.equals("/back")) {
+                // sendMessage(null, inlineKeyboardMarkup, "ADD BASKET OR BACK  ", chatId);
+                InlineKeyboardMarkup categoryInlineKeyboardMarkup = inlineKeyboardServise.getCategoryInlineKeyboardMarkup(categoryList, 2);
+                editMethod(chatId, update.getCallbackQuery().getMessage().getMessageId(), categoryInlineKeyboardMarkup);
+            } else if (data.charAt(0) == 'd' && data.charAt(1) == 'e') {
+                String substring = data.substring(6);
+                System.out.println(substring);
+                Basket currentUserBasket = basketService.getById(chatId);
+                int i = Integer.parseInt(substring);
+                List<Integer> productIdList = currentUserBasket.getProductIdList();
+                productIdList.remove((Object) i);
+                currentUserBasket.setProductIdList(productIdList);
+                try {
+                    DataBase.writeBasketListToFile(basketList);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                sendMessage(null, null, "PRODUCT DELETED FROM BASKET ", chatId);
+            } else if (data.charAt(0) == 'b' && data.charAt(1) == 'u') {
+                ReplyKeyboardMarkup replyKeyboardMarkup = takeLocation();
+                sendMessage(replyKeyboardMarkup,null,"IF YOU WANT TO BUY PRODUCT SHARE LOCATION",chatId);
+            } else {
+                // sendMessage(null, inlineKeyboardMarkup, "ADD BASKET OR BACK  ", chatId);
                 InlineKeyboardMarkup inlineKeyboardMarkup = categoryOrProduct(update.getCallbackQuery(), chatId);
-                sendMessage(null, inlineKeyboardMarkup, "CHOOSE ONE FOR TAKE MORE INFO ABOUT PRODUCT", chatId);
+                editMethod(chatId, update.getCallbackQuery().getMessage().getMessageId(), inlineKeyboardMarkup);
             }
 
         }
@@ -81,14 +105,13 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
 
         try {
 
-            if (data.charAt(0) == 'C'&&data.charAt(1) == 'L'){
+            if (data.charAt(0) == 'C' && data.charAt(1) == 'L') {
                 int k = Integer.parseInt(data.substring(2));
                 return inlineKeyboardServise.getProductInlineKeyboardMarkup(productList, k, 1);
-            } else  if (data.charAt(0) == 'P') {
+            } else if (data.charAt(0) == 'P') {
                 int j = Integer.parseInt(data.substring(1));
                 Product product = getProductFromList(j);
                 productInfo(product, chatId);
-
             } else if (data.charAt(0) == 'C') {
                 int i = Integer.parseInt(data.substring(1));
                 return inlineKeyboardServise.getProductInlineKeyboardMarkup(productList, i, 1);
@@ -101,6 +124,7 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         }
 
     }
+
     private void productInfo(Product product, Long chatId) throws TelegramApiException {
         //EditMessageReplyMarkup edit=new EditMessageReplyMarkup();
 
@@ -117,7 +141,29 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         InlineKeyboardButton basket = new InlineKeyboardButton(ADD_BASKET);
         InlineKeyboardButton back = new InlineKeyboardButton(BACK);
         basket.setCallbackData("/basket" + product.getId());
-        back.setCallbackData("CL"+product.getCategoryId());
+        back.setCallbackData("CL" + product.getCategoryId());
+        row.add(back);
+        row.add(basket);
+        rows.add(row);
+        productPhotoWithContent.setReplyMarkup(in);
+        execute(productPhotoWithContent);
+    }
+
+    private void productInfoForBasket(Product product, Long chatId) throws TelegramApiException {
+        SendPhoto productPhotoWithContent = new SendPhoto();
+        productPhotoWithContent.setPhoto(new InputFile(new File(product.getUri())));
+        productPhotoWithContent.setChatId(chatId);
+        productPhotoWithContent.setCaption("BRAND : " + product.getBrand() + " " + "\nNAME : " + product.getName()
+                + "\nMODEL : " + product.getModel() + "\nPRICE: " + product.getPrice() + " $ " + "\n DISCOUNT " + product.getDiscount() + " %");
+        InlineKeyboardMarkup in = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        in.setKeyboard(rows);
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        InlineKeyboardButton basket = new InlineKeyboardButton(DELETE_FROM_BASKET);
+        InlineKeyboardButton back = new InlineKeyboardButton(BUY);
+        basket.setCallbackData("delete" + product.getId());
+        back.setCallbackData("buy" + product.getId());
         row.add(back);
         row.add(basket);
         rows.add(row);
@@ -143,13 +189,51 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
                 for (Basket basket : basketList) {
                     if (basket.getChatId().equals(chatId)) {
                         for (Integer integer : basket.getProductIdList()) {
-                            System.out.println(productService.getById(integer));
+                            try {
+                                Product product = productService.getById(integer);
+                                productInfoForBasket(product, chatId);
+                                System.out.println(productService.getById(integer));
+                            } catch (TelegramApiException e) {
+                                throw new RuntimeException(e);
+                            }
+
                         }
                     }
                 }
             }
         } else if (message.hasContact()) {
             forCheckContact(message);
+        } else if (message.hasLocation()) {
+            addUserLocation(message);
+            sendMessage(null, null, "OUR ADMINS CALL YOU ", chatId);
+        }
+    }
+
+    private ReplyKeyboardMarkup takeLocation() {
+        KeyboardButton k = new KeyboardButton(SHARE_LOCATION);
+        k.setRequestContact(true);
+        ReplyKeyboardMarkup r = new ReplyKeyboardMarkup(
+                List.of(
+                        new KeyboardRow(
+                                List.of(
+                                        k
+                                )
+                        )
+                )
+        );
+        r.setResizeKeyboard(true);
+        r.setSelective(true);
+        r.setOneTimeKeyboard(true);
+        return r;
+    }
+
+    private void addUserLocation(Message message) {
+        Location location = message.getLocation();
+        Long userId = message.getContact().getUserId();
+        for (TelegramUser telegramUser : telegramUsers) {
+            if (telegramUser.getUserId().equals(userId)) {
+                telegramUser.setLocation(location);
+            }
         }
     }
 
@@ -164,11 +248,11 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         sendMessage(addReplyKeyboardMarkup(List.of(ALL_CATEGORIES, BASKET, MAIN_MENU)), null, "WELCOME TO OUR BOT " + contact.getFirstName().toUpperCase(), contact.getUserId());
     }
 
+
     private void forStart(Message message, Long chatId) throws IOException {
         if (DataBase.checkUser(chatId) == null) {
             KeyboardButton k = new KeyboardButton(SHARE_CONTACT);
             k.setRequestContact(true);
-
             ReplyKeyboardMarkup r = new ReplyKeyboardMarkup(
                     List.of(
                             new KeyboardRow(
@@ -228,6 +312,17 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         }
     }
 
+    private void editMethod(Long chatId, Integer messagId, InlineKeyboardMarkup markup) {
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setMessageId(messagId);
+        editMessageReplyMarkup.setReplyMarkup(markup);
+        try {
+            execute(editMessageReplyMarkup);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private void addProductToBasket(int productId, Long chatId) throws IOException {
         Basket basket = basketService.getById(chatId);

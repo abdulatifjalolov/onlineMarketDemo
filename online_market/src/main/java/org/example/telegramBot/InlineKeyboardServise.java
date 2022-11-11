@@ -2,11 +2,11 @@ package org.example.telegramBot;
 
 import org.example.model.Category;
 import org.example.model.Product;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import java.util.ArrayList;
 import java.util.List;
+import static org.example.telegramBot.BotConstants.BACK;
 public class InlineKeyboardServise {
     public InlineKeyboardMarkup getCategoryInlineKeyboardMarkup(List<Category> categoryList, int n) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -28,7 +28,10 @@ public class InlineKeyboardServise {
         if (row.size() > 0) {
             rows.add(row);
         }
-
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(BACK);
+        inlineKeyboardButton.setCallbackData("back");
+        row.add(inlineKeyboardButton);
+        rows.add(row);
         return inlineKeyboardMarkup;
     }
 
@@ -40,9 +43,9 @@ public class InlineKeyboardServise {
         List<InlineKeyboardButton> row = new ArrayList<>();
         for (int i = 0; i < productList.size(); i++) {
             Product product = productList.get(i);
-            if (product.getCategoryId()==categoryId) {
+            if (product.getCategoryId() == categoryId) {
                 InlineKeyboardButton inlineKeyboardButton = null;
-                inlineKeyboardButton = new InlineKeyboardButton(product.getBrand()+" "+product.getName());
+                inlineKeyboardButton = new InlineKeyboardButton(product.getBrand() + " " + product.getName());
                 inlineKeyboardButton.setCallbackData("P" + product.getId());
                 row.add(inlineKeyboardButton);
                 if (i % n == 0) {
@@ -54,7 +57,10 @@ public class InlineKeyboardServise {
                 rows.add(row);
             }
         }
-
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(BACK);
+        inlineKeyboardButton.setCallbackData("/back");
+        row.add(inlineKeyboardButton);
+        rows.add(row);
         return inlineKeyboardMarkup;
     }
 
