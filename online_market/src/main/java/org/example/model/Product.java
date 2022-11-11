@@ -17,4 +17,5 @@ public class Product extends Base {
     private int count;
     private int discount;
     private int categoryId;
+    private String  uri;
 }

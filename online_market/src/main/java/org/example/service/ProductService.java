@@ -1,16 +1,18 @@
 package org.example.service;
 
+import org.example.DataBase;
 import org.example.dto.ProductDto;
-import org.example.file.FileUtils;
 import org.example.model.Product;
 
 import java.io.IOException;
 import java.util.List;
 
+import static org.example.DataBase.productList;
+
 public class ProductService implements BaseService<Product, Product> {
 
-    public List<Product> getProductsOfCategory(int categoryID) throws IOException {
-        return FileUtils.getProductList().stream()
+    public List<Product> getProductsOfCategory(int categoryID) {
+        return productList.stream()
                 .filter(item -> item.getCategoryId() == categoryID)
                 .toList();
     }
@@ -18,64 +20,50 @@ public class ProductService implements BaseService<Product, Product> {
     @Override
     public Product add(Product product) {
         product = ProductDto.addProduct(product);
-        try {
-            for (Product product2 : FileUtils.getProductList()) {
-                if (product2.getName().equals(product.getName())) {
-                    return null;
-                }
+        for (Product product2 : productList) {
+            if (product2.getName().equals(product.getName())) {
+                return null;
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-//        products.add(product);
+        productList.add(product);
         try {
-            return FileUtils.writeProductToFile(product);
+            DataBase.writeProductToFile(productList);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return product;
+
     }
 
     @Override
     public boolean delete(int id) {
-        try {
-            for (Product product : FileUtils.getProductList()) {
+            for (Product product : productList) {
                 if (product.getId() == id) {
-                    //                products.remove(product);
-                    return FileUtils.deleteProductFile(id);
+                    return productList.remove(product);
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return false;
     }
 
     @Override
     public Product getById(int id) {
-        try {
-            for (Product product : FileUtils.getProductList()) {
-                if (product.getId() == id) {
-                    return product;
-                }
+        for (Product product : productList) {
+            if (product.getId() == id) {
+                return product;
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return null;
     }
 
     @Override
     public Product update(Product product) {
-        try {
-            for (Product product2 : FileUtils.getProductList()) {
+            for (Product product2 : productList) {
                 if (product2.getName().equals(product.getName())) {
                     product = ProductDto.update(product2);
-                    return FileUtils.writeProductToFile(product);
+                     productList.add(product);
+                     return product;
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return null;
     }
 }

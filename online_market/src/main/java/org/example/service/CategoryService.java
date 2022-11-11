@@ -1,64 +1,56 @@
 package org.example.service;
 
-import org.example.file.FileUtils;
+import org.example.DataBase;
 import org.example.model.Category;
-
 import java.io.IOException;
 import java.util.List;
+
+import static org.example.DataBase.categoryList;
 
 public class CategoryService implements BaseService<Category, Category> {
 
     @Override
     public Category add(Category category) {
-        try {
-            for (Category category1 : FileUtils.getCategoryList()) {
+
+            for (Category category1 :categoryList) {
                 if (category1.getName().equals(category.getName())) {
                     return null;
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        categoryList.add(category);
         try {
-            FileUtils.writeCategoryToFile(category);
-            return category;
+            DataBase.writeCategoryToFile(categoryList);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        BaseService.categories.add(category);
+        return category;
     }
 
     @Override
     public boolean delete(int id) {
-        try {
-            for (Category category : FileUtils.getCategoryList()) {
-                if (category.getId() == id) {
-                    //                BaseService.categories.remove(category);
-                    System.out.println(FileUtils.deleteCategoryFile(id));
-                }
+        for (Category category : categoryList) {
+            if (category.getId() == id) {
+                categoryList.remove(category);
+                return true;
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return false;
     }
 
     @Override
     public Category getById(int id) {
-        try {
-            for (Category category : FileUtils.getCategoryList()) {
-                if (category.getId() == id) {
+        for (Category category : categoryList) {
+            if (category!=null){
+                if (category.getId()==id){
                     return category;
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return null;
     }
 
     public List<Category> getInnerCategories(int parentId) throws IOException {
-        List<Category> list = FileUtils.getCategoryList().stream().filter(item -> item.getParentId() == parentId).toList();
+        List<Category> list = categoryList.stream().filter(item -> item.getParentId() == parentId).toList();
         return list.size() != 0 ? list : null;
     }
 

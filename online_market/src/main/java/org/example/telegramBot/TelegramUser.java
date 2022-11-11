@@ -8,5 +8,5 @@ import org.telegram.telegrambots.meta.api.objects.Contact;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TelegramUser extends Contact{
-    private String step;
+    private boolean isAdmin;
 }

@@ -26,7 +26,10 @@ public class ProductDto {
         product.setDiscount(new Scanner(System.in).nextInt());
 
         System.out.println("ENTER CATEGORY ID OF PRODUCT");
-        product.setDiscount(new Scanner(System.in).nextInt());
+        product.setCategoryId(new Scanner(System.in).nextInt());
+
+        System.out.println("ENTER PHOTO URI  ");
+        product.setUri(new Scanner(System.in).nextLine());
 
         return product;
     }
@@ -34,7 +37,7 @@ public class ProductDto {
     public static Product update(Product product) {
         int var = 10;
         while (var != 0) {
-            System.out.println("1.NAME 2.MODEL 3.BRAND 4.PRICE 5.COUNT 6.DISCOUNT 7.CATEGORY ID 0.EXIT");
+            System.out.println("1.NAME 2.MODEL 3.BRAND 4.PRICE 5.COUNT 6.DISCOUNT 7.CATEGORY ID 8.EDIT URI 0.EXIT");
             var = new Scanner(System.in).nextInt();
 
             switch (var) {
@@ -71,6 +74,11 @@ public class ProductDto {
                 case 7->{
                     System.out.println("ENTER CATEGORY ID");
                     product.setCategoryId(new Scanner(System.in).nextInt());
+                    System.out.println("SUCCESSFULLY EDITED");
+                }
+                case 8->{
+                    System.out.println("ENTER URI");
+                    product.setUri(new Scanner(System.in).nextLine());
                     System.out.println("SUCCESSFULLY EDITED");
                 }
 

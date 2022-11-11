@@ -1,28 +1,16 @@
 package org.example.service;
-
-import org.example.file.FileUtils;
 import org.example.model.Basket;
-
-import java.io.IOException;
+import static org.example.DataBase.basketList;
 
 public class BasketService implements BaseService<Basket, Basket> {
     @Override
     public Basket add(Basket basket) {
-        try {
-            for (Basket basket1 : FileUtils.getBasketList()) {
-                if (basket1.getChatId() == basket.getChatId()) {
-                    return null;
-                }
+        for (Basket basket1 : basketList) {
+            if (basket.getChatId().equals(basket1.getChatId())){
+                return basket;
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-//        baskets.add(basket);
-        try {
-            FileUtils.writeBasketToFile(basket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        basketList.add(basket);
         return basket;
     }
 
@@ -33,14 +21,14 @@ public class BasketService implements BaseService<Basket, Basket> {
 
     @Override
     public Basket getById(int id) {
-        try {
-            for (Basket basket1 : FileUtils.getBasketList()) {
-                if (basket1.getChatId() == id) {
-                    return basket1;
-                }
+        return null;
+    }
+    public Basket getById(Long chatId) {
+        for (Basket basket : basketList) {
+            if (basket.getChatId().equals(chatId)){
+                System.out.println(basket);
+                return basket;
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return null;
     }
