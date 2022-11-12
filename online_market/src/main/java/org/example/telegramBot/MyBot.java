@@ -28,6 +28,7 @@ import static org.example.DataBase.*;
 
 public class MyBot extends TelegramLongPollingBot implements BotConstants {
     InlineKeyboardServise inlineKeyboardServise = new InlineKeyboardServise();
+    TelegramBotAdmin telegramBotAdmin = new TelegramBotAdmin();
     BasketService basketService = new BasketService();
     ProductService productService = new ProductService();
 
@@ -96,7 +97,6 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
                 InlineKeyboardMarkup inlineKeyboardMarkup = categoryOrProduct(update.getCallbackQuery(), chatId);
                 editMethod(chatId, update.getCallbackQuery().getMessage().getMessageId(), inlineKeyboardMarkup);
             }
-
         }
     }
 
@@ -126,7 +126,6 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
     }
 
     private void productInfo(Product product, Long chatId) throws TelegramApiException {
-        //EditMessageReplyMarkup edit=new EditMessageReplyMarkup();
 
         SendPhoto productPhotoWithContent = new SendPhoto();
         productPhotoWithContent.setPhoto(new InputFile(new File(product.getUri())));
@@ -200,6 +199,8 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
                         }
                     }
                 }
+            }else {
+                forAdminInnerButton(text,chatId);
             }
         } else if (message.hasContact()) {
             forCheckContact(message);
@@ -227,7 +228,7 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
     }
 
     private void addUserLocation(Message message) throws IOException {
-        Long userId=  message.getFrom().getId();
+        Long userId = message.getFrom().getId();
         if (checkUserLocation(userId)) {
             Double longitude = message.getLocation().getLongitude();
             Double latitude = message.getLocation().getLatitude();
@@ -240,7 +241,7 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
                 }
             }
         }
-            sendMessage(addReplyKeyboardMarkup(List.of(ALL_CATEGORIES, BASKET, MAIN_MENU)), null, "OUR ADMINS CALL YOU", userId);
+        sendMessage(addReplyKeyboardMarkup(List.of(ALL_CATEGORIES, BASKET, MAIN_MENU)), null, "OUR ADMINS CALL YOU", userId);
 
     }
 
@@ -257,29 +258,45 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
 
 
     private void forStart(Message message, Long chatId) throws IOException {
-        if (DataBase.checkUser(chatId) == null) {
-            KeyboardButton k = new KeyboardButton(SHARE_CONTACT);
-            k.setRequestContact(true);
-            ReplyKeyboardMarkup r = new ReplyKeyboardMarkup(
-                    List.of(
-                            new KeyboardRow(
-                                    List.of(
-                                            k
-                                    )
-                            )
-                    )
-            );
-            r.setResizeKeyboard(true);
-            r.setSelective(true);
-            r.setOneTimeKeyboard(true);
-            sendMessage(r, null, "PLEASE SHARE YOUR CONTACT", chatId);
-
+        boolean b = telegramBotAdmin.checkAdmin(chatId);
+        if (b) {
+            forAdmin(chatId);
         } else {
-            sendMessage(addReplyKeyboardMarkup(List.of(ALL_CATEGORIES, BASKET, MAIN_MENU)), null, "WELCOME TO OUR BOT " + message.getChat().getFirstName(), chatId);
+            if (DataBase.checkUser(chatId) == null) {
+                KeyboardButton k = new KeyboardButton(SHARE_CONTACT);
+                k.setRequestContact(true);
+                ReplyKeyboardMarkup r = new ReplyKeyboardMarkup(
+                        List.of(
+                                new KeyboardRow(
+                                        List.of(
+                                                k
+                                        )
+                                )
+                        )
+                );
+                r.setResizeKeyboard(true);
+                r.setSelective(true);
+                r.setOneTimeKeyboard(true);
+                sendMessage(r, null, "PLEASE SHARE YOUR CONTACT", chatId);
+
+            } else {
+                sendMessage(addReplyKeyboardMarkup(List.of(ALL_CATEGORIES, BASKET, MAIN_MENU)), null, "WELCOME TO OUR BOT " + message.getChat().getFirstName(), chatId);
+            }
         }
     }
-
-
+    private void forAdmin(Long chatId) {
+        ReplyKeyboardMarkup adminMainButton = telegramBotAdmin.creatReplyKeyboardMarKapForAdmin(List.of(CATEGORY_SITTING, PRODUCT_SITTING));
+        sendMessage(adminMainButton, null, "ADMIN SITTING", chatId);
+    }
+    private void forAdminInnerButton(String text,Long chatId){
+         if (text.equals(CATEGORY_SITTING)) {
+            sendMessage(telegramBotAdmin.creatReplyKeyboardMarKapForAdmin(List.of(ADD_CATEGORY, DELETE_CATEGORY, SHOW_CATEGORY_LIST, BACK)), null, CATEGORY_SITTING, chatId);
+        } else if (text.equals(PRODUCT_SITTING)) {
+            sendMessage(telegramBotAdmin.creatReplyKeyboardMarKapForAdmin(List.of(ADD_PRODUCT, DELETE_PRODUCT, SHOW_PRODUCT_LIST, UPDATE_PRODUCT, BACK)), null, PRODUCT_SITTING, chatId);
+        } else if (text.equals(BACK)) {
+             forAdmin(chatId);
+         }
+    }
     private ReplyKeyboardMarkup addReplyKeyboardMarkup(List<String> mainMenu) {
 
         ReplyKeyboardMarkup r = new ReplyKeyboardMarkup();
@@ -319,10 +336,10 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         }
     }
 
-    private void editMethod(Long chatId, Integer messagId, InlineKeyboardMarkup markup) {
+    private void editMethod(Long chatId, Integer massageId, InlineKeyboardMarkup markup) {
         EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
         editMessageReplyMarkup.setChatId(chatId);
-        editMessageReplyMarkup.setMessageId(messagId);
+        editMessageReplyMarkup.setMessageId(massageId);
         editMessageReplyMarkup.setReplyMarkup(markup);
         try {
             execute(editMessageReplyMarkup);
