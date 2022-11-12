@@ -90,7 +90,7 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
                 sendMessage(null, null, "PRODUCT DELETED FROM BASKET ", chatId);
             } else if (data.charAt(0) == 'b' && data.charAt(1) == 'u') {
                 ReplyKeyboardMarkup replyKeyboardMarkup = takeLocation();
-                sendMessage(replyKeyboardMarkup,null,"IF YOU WANT TO BUY PRODUCT SHARE LOCATION",chatId);
+                sendMessage(replyKeyboardMarkup, null, "IF YOU WANT TO BUY PRODUCT SHARE LOCATION", chatId);
             } else {
                 // sendMessage(null, inlineKeyboardMarkup, "ADD BASKET OR BACK  ", chatId);
                 InlineKeyboardMarkup inlineKeyboardMarkup = categoryOrProduct(update.getCallbackQuery(), chatId);
@@ -205,13 +205,12 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
             forCheckContact(message);
         } else if (message.hasLocation()) {
             addUserLocation(message);
-            sendMessage(null, null, "OUR ADMINS CALL YOU ", chatId);
         }
     }
 
     private ReplyKeyboardMarkup takeLocation() {
         KeyboardButton k = new KeyboardButton(SHARE_LOCATION);
-        k.setRequestContact(true);
+        k.setRequestLocation(true);
         ReplyKeyboardMarkup r = new ReplyKeyboardMarkup(
                 List.of(
                         new KeyboardRow(
@@ -227,14 +226,22 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         return r;
     }
 
-    private void addUserLocation(Message message) {
-        Location location = message.getLocation();
-        Long userId = message.getContact().getUserId();
-        for (TelegramUser telegramUser : telegramUsers) {
-            if (telegramUser.getUserId().equals(userId)) {
-                telegramUser.setLocation(location);
+    private void addUserLocation(Message message) throws IOException {
+        Long userId=  message.getFrom().getId();
+        if (checkUserLocation(userId)) {
+            Double longitude = message.getLocation().getLongitude();
+            Double latitude = message.getLocation().getLatitude();
+
+            for (TelegramUser telegramUser : telegramUsers) {
+                if (telegramUser.getUserId().equals(userId)) {
+                    telegramUser.setLongitude(longitude);
+                    telegramUser.setLatitude(latitude);
+                    DataBase.writeUsersToFile(telegramUsers);
+                }
             }
         }
+            sendMessage(addReplyKeyboardMarkup(List.of(ALL_CATEGORIES, BASKET, MAIN_MENU)), null, "OUR ADMINS CALL YOU", userId);
+
     }
 
     private void forCheckContact(Message message) {

@@ -134,6 +134,17 @@ public class DataBase {
         }
         return null;
     }
+    public static boolean checkUserLocation(Long userId) throws IOException {
+        telegramUsers = readUser();
+        for (TelegramUser telegramUser : telegramUsers) {
+           if (telegramUser.getUserId().equals(userId)){
+               if (telegramUser.getLongitude()==null){
+                   return true;
+               }
+           }
+        }
+        return false;
+    }
 
     // CATEGORY
     public static void writeCategoryToFile(List<Category> categories) throws IOException {

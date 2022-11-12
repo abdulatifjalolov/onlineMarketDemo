@@ -11,5 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.Location;
 @AllArgsConstructor
 public class TelegramUser extends Contact{
     private boolean isAdmin;
-    private Location location;
+    private Double latitude;
+    private Double longitude;
 }

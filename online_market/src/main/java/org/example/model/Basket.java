@@ -14,4 +14,5 @@ import java.util.List;
 public class Basket extends Base{
     private  List<Integer> productIdList=new ArrayList<>();
     private Long chatId;
+
 }
