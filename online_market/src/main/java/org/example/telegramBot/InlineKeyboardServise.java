@@ -25,7 +25,7 @@ public class InlineKeyboardServise {
                 row = new ArrayList<>();
             }
         }
-        if (row.size() > 0) {
+        if (row.size() > 1) {
             rows.add(row);
         }
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(BACK);
@@ -53,12 +53,67 @@ public class InlineKeyboardServise {
                     row = new ArrayList<>();
                 }
             }
-            if (row.size() > 0) {
+            if (row.size() > 1) {
                 rows.add(row);
             }
         }
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(BACK);
         inlineKeyboardButton.setCallbackData("/back");
+        row.add(inlineKeyboardButton);
+        rows.add(row);
+        return inlineKeyboardMarkup;
+    }
+
+
+    public InlineKeyboardMarkup getProductsInlineKeyboardForAdmin(List<Product> productList, int n) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        inlineKeyboardMarkup.setKeyboard(rows);
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        for (int i = 0; i < productList.size(); i++) {
+            Product product = productList.get(i);
+            InlineKeyboardButton inlineKeyboardButton = null;
+            inlineKeyboardButton = new InlineKeyboardButton("id:>>"+product.getId()+"  name: "+product.getName());
+            inlineKeyboardButton.setCallbackData("C" + product.getId());
+            row.add(inlineKeyboardButton);
+            if (i % n == 0) {
+                rows.add(row);
+                row = new ArrayList<>();
+            }
+        }
+        if (row.size() > 0) {
+            rows.add(row);
+        }
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(BACK);
+        inlineKeyboardButton.setCallbackData("back");
+        row.add(inlineKeyboardButton);
+        rows.add(row);
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup getCategoryInlineKeyboardForAdmin(List<Category> categoryList, int n) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        inlineKeyboardMarkup.setKeyboard(rows);
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        for (int i = 0; i < categoryList.size(); i++) {
+            Category category = categoryList.get(i);
+            InlineKeyboardButton inlineKeyboardButton = null;
+            inlineKeyboardButton = new InlineKeyboardButton("id:>>"+category.getId()+"  name: "+category.getName());
+            inlineKeyboardButton.setCallbackData("C" + category.getId());
+            row.add(inlineKeyboardButton);
+            if (i % n == 0) {
+                rows.add(row);
+                row = new ArrayList<>();
+            }
+        }
+        if (row.size() > 0) {
+            rows.add(row);
+        }
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(BACK);
+        inlineKeyboardButton.setCallbackData("back");
         row.add(inlineKeyboardButton);
         rows.add(row);
         return inlineKeyboardMarkup;

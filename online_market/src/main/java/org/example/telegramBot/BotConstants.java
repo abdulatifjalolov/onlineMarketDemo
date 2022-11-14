@@ -1,10 +1,10 @@
 package org.example.telegramBot;
 
 public interface BotConstants {
-    //    String TOKEN="5755340585:AAGT4kUnlhilEH-kyxRcpgLENNhsxxfbLbQ";
-    //    String USERNAME="http://t.me/online_market_b24bot";
-    String TOKEN = "5689048784:AAFacnY02Vab53zGCXAssPXjSO_8vkYCVNQ";
-    String USERNAME = "@valyutaKonvertirOnlinebot";
+        String TOKEN="5755340585:AAGT4kUnlhilEH-kyxRcpgLENNhsxxfbLbQ";
+        String USERNAME="http://t.me/online_market_b24bot";
+//    String TOKEN = "5689048784:AAFacnY02Vab53zGCXAssPXjSO_8vkYCVNQ";
+//    String USERNAME = "@valyutaKonvertirOnlinebot";
     String MAIN_MENU = "MAIN MENU\uD83E\uDDFE";
     String SHARE_CONTACT = "\uD83D\uDCDESHARE CONTACT\uD83D\uDCDE";
     String SHARE_LOCATION = "\uD83D\uDCCDSHARE LOCATION\uD83D\uDCCD";
@@ -15,8 +15,6 @@ public interface BotConstants {
     String PRODUCTS = "PRODUCTS⬇";
     String ADD_BASKET = "ADD TO BASKET\uD83D\uDED2";
     String SUCCESSFULLY_ADDED = "SUCCESSFULLY ADDED☑";
-    int HEAD_VALUE_CATEGORIES = 0;
-    int COUNT_ONE_LINE_BUTTONS = 3;
     String START = "/start";
     String BACK = "BACK\uD83D\uDD19";
     String WELCOME = "WELCOME TO OUR BOT";
@@ -34,6 +32,20 @@ public interface BotConstants {
     String UPDATE_PRODUCT="UPDATE PRODUCT";
     String SHOW_PRODUCT_LIST="SHOW PRODUCT LIST";
 
+
+
+    String MAIN_STEP="MAIN_STEP";
+    String CATEGORY_STEP="CATEGORY_STEP";
+    String PRODUCT_STEP="PRODUCT_STEP";
+
+    String DELETE_CATEGORY_STEP="DELETE_CATEGORY_STEP";
+    String ADD_CATEGORY_STEP="ADD_CATEGORY_STEP";
+    String CATEGORY_LIST_STEP="CATEGORY_LIST_STEP";
+
+    String ADD_PRODUCT_STEP="ADD_PRODUCT_STEP";
+    String UPDATE_PRODUCT_STEP="UPDATE_PRODUCT_STEP";
+    String SHOW_PRODUCTS_STEP="SHOW_PRODUCTS_STEP";
+    String DELETE_PRODUCT_STEP="DELETE_PRODUCT_STEP";
 
 
 

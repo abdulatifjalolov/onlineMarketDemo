@@ -146,6 +146,7 @@ public class DataBase {
         return false;
     }
 
+
     // CATEGORY
     public static void writeCategoryToFile(List<Category> categories) throws IOException {
         File file = new File(headUrl + "categories/category.txt");

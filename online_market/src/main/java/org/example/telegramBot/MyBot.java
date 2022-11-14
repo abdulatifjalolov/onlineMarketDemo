@@ -2,9 +2,11 @@ package org.example.telegramBot;
 
 import org.example.DataBase;
 import org.example.model.Basket;
+import org.example.model.Category;
 import org.example.model.Product;
 
 import org.example.service.BasketService;
+import org.example.service.CategoryService;
 import org.example.service.ProductService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -22,6 +24,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.example.DataBase.*;
@@ -29,6 +32,7 @@ import static org.example.DataBase.*;
 public class MyBot extends TelegramLongPollingBot implements BotConstants {
     InlineKeyboardServise inlineKeyboardServise = new InlineKeyboardServise();
     TelegramBotAdmin telegramBotAdmin = new TelegramBotAdmin();
+    CategoryService categoryService = new CategoryService();
     BasketService basketService = new BasketService();
     ProductService productService = new ProductService();
 
@@ -147,6 +151,28 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         productPhotoWithContent.setReplyMarkup(in);
         execute(productPhotoWithContent);
     }
+    private void productInfo1(Product product, String chatId) throws TelegramApiException {
+
+        SendPhoto productPhotoWithContent = new SendPhoto();
+        productPhotoWithContent.setPhoto(new InputFile(new File(product.getUri())));
+        productPhotoWithContent.setChatId(chatId);
+        productPhotoWithContent.setCaption("BRAND : " + product.getBrand() + " " + "\nNAME : " + product.getName()
+                + "\nMODEL : " + product.getModel() + "\nPRICE: " + product.getPrice() + " $ " + "\n DISCOUNT " + product.getDiscount() + " %");
+        InlineKeyboardMarkup in = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        in.setKeyboard(rows);
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        InlineKeyboardButton basket = new InlineKeyboardButton(ADD_BASKET);
+        InlineKeyboardButton back = new InlineKeyboardButton(BACK);
+        basket.setCallbackData("/basket" + product.getId());
+        back.setCallbackData("CL" + product.getCategoryId());
+        row.add(back);
+        row.add(basket);
+        rows.add(row);
+        productPhotoWithContent.setReplyMarkup(in);
+        execute(productPhotoWithContent);
+    }
 
     private void productInfoForBasket(Product product, Long chatId) throws TelegramApiException {
         SendPhoto productPhotoWithContent = new SendPhoto();
@@ -174,6 +200,7 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
         Message message = update.getMessage();
         System.out.println(message.getFrom());
         Long chatId = message.getChatId();
+        TelegramUser user = checkUser(chatId);
         if (message.hasText()) {
             String text = message.getText();
             if (text.equals(START)) {
@@ -185,27 +212,45 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
                 InlineKeyboardMarkup categoryInlineKeyboardMarkup = inlineKeyboardServise.getCategoryInlineKeyboardMarkup(categoryList, 2);
                 sendMessage(null, categoryInlineKeyboardMarkup, "CHOOSE CATEGORY", chatId);
             } else if (text.equals(BASKET)) {
-                for (Basket basket : basketList) {
-                    if (basket.getChatId().equals(chatId)) {
-                        for (Integer integer : basket.getProductIdList()) {
-                            try {
-                                Product product = productService.getById(integer);
-                                productInfoForBasket(product, chatId);
-                                System.out.println(productService.getById(integer));
-                            } catch (TelegramApiException e) {
-                                throw new RuntimeException(e);
-                            }
-
-                        }
-                    }
-                }
-            }else {
-                forAdminInnerButton(text,chatId);
+                basket(chatId);
+//                for (Basket basket : basketList) {
+//                    if (basket.getChatId().equals(chatId)) {
+//                        for (Integer integer : basket.getProductIdList()) {
+//                            try {
+//                                Product product = productService.getById(integer);
+//                                productInfoForBasket(product, chatId);
+//                                System.out.println(productService.getById(integer));
+//                            } catch (TelegramApiException e) {
+//                                throw new RuntimeException(e);
+//                            }
+//
+//                        }
+//                    }
+//                }
+            } else {
+                forAdminInnerButton(text, chatId);
             }
         } else if (message.hasContact()) {
             forCheckContact(message);
         } else if (message.hasLocation()) {
             addUserLocation(message);
+        }
+    }
+
+    private void basket(Long chatId) {
+        for (Basket basket : basketList) {
+            if (basket.getChatId().equals(chatId)) {
+                for (Integer integer : basket.getProductIdList()) {
+                    try {
+                        Product product = productService.getById(integer);
+                        productInfoForBasket(product, chatId);
+                        System.out.println(productService.getById(integer));
+                    } catch (TelegramApiException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+            }
         }
     }
 
@@ -259,8 +304,13 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
 
     private void forStart(Message message, Long chatId) throws IOException {
         boolean b = telegramBotAdmin.checkAdmin(chatId);
+        String text = message.getText();
+        TelegramUser user = checkUser(chatId);
         if (b) {
-            forAdmin(chatId);
+            user.setStep(MAIN_MENU);
+            if (user.getStep().equals(MAIN_MENU)) {
+                forAdmin(chatId);
+            }
         } else {
             if (DataBase.checkUser(chatId) == null) {
                 KeyboardButton k = new KeyboardButton(SHARE_CONTACT);
@@ -284,19 +334,110 @@ public class MyBot extends TelegramLongPollingBot implements BotConstants {
             }
         }
     }
-    private void forAdmin(Long chatId) {
+
+    private void forAdmin(Long chatId) throws IOException {
+        TelegramUser user = checkUser(chatId);
         ReplyKeyboardMarkup adminMainButton = telegramBotAdmin.creatReplyKeyboardMarKapForAdmin(List.of(CATEGORY_SITTING, PRODUCT_SITTING));
+        user.setStep(MAIN_STEP);
+        writeUsersToFile(telegramUsers);
         sendMessage(adminMainButton, null, "ADMIN SITTING", chatId);
     }
-    private void forAdminInnerButton(String text,Long chatId){
-         if (text.equals(CATEGORY_SITTING)) {
+
+    private void forAdminInnerButton(String text, Long chatId) throws IOException {
+        TelegramUser user = checkUser(chatId);
+        if (text.equals(CATEGORY_SITTING)) {
             sendMessage(telegramBotAdmin.creatReplyKeyboardMarKapForAdmin(List.of(ADD_CATEGORY, DELETE_CATEGORY, SHOW_CATEGORY_LIST, BACK)), null, CATEGORY_SITTING, chatId);
+            user.setStep(CATEGORY_STEP);
+            writeUsersToFile(telegramUsers);
         } else if (text.equals(PRODUCT_SITTING)) {
             sendMessage(telegramBotAdmin.creatReplyKeyboardMarKapForAdmin(List.of(ADD_PRODUCT, DELETE_PRODUCT, SHOW_PRODUCT_LIST, UPDATE_PRODUCT, BACK)), null, PRODUCT_SITTING, chatId);
+            user.setStep(PRODUCT_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (text.equals(ADD_CATEGORY)) {
+            sendMessage(null, null, "ENTER CATEGORY NAME ", chatId);
+            user.setStep(ADD_CATEGORY_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (text.equals(DELETE_CATEGORY)) {
+            InlineKeyboardMarkup showCategoryForAdmin = inlineKeyboardServise.getCategoryInlineKeyboardForAdmin(categoryList, 1);
+            sendMessage(null, showCategoryForAdmin, "ENTER CATEGORY ID FOR DELETE ", chatId);
+            user.setStep(DELETE_CATEGORY_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (text.equals(SHOW_CATEGORY_LIST)) {
+            readAll();
+            InlineKeyboardMarkup showCategoryForAdmin = inlineKeyboardServise.getCategoryInlineKeyboardForAdmin(categoryList, 1);
+            sendMessage(null, showCategoryForAdmin, "CATEGORIES LIST ", chatId);
+            user.setStep(CATEGORY_LIST_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (text.equals(ADD_PRODUCT)) {
+            InlineKeyboardMarkup showCategoryForAdmin = inlineKeyboardServise.getCategoryInlineKeyboardForAdmin(categoryList, 1);
+            sendMessage(null, showCategoryForAdmin,
+                    "ENTER CATEGORY 'ID' AND SET '/N' NAME,  '/B' BRAND , '/M' MODEL ,'/P' PRICE , '/C' COUNT ,'/D' DISCOUNT '/U' \n CATEGORY LIST", chatId);
+            user.setStep(ADD_PRODUCT_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (text.equals(DELETE_PRODUCT)) {
+            InlineKeyboardMarkup productsInlineKeyboardForAdmin = inlineKeyboardServise.getProductsInlineKeyboardForAdmin(productList, 1);
+            sendMessage(null, productsInlineKeyboardForAdmin, "ENTER PRODUCT ID FOR DELETE ", chatId);
+            user.setStep(DELETE_PRODUCT_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (text.equals(SHOW_PRODUCT_LIST)) {
+            readAll();
+            InlineKeyboardMarkup productsInlineKeyboardForAdmin = inlineKeyboardServise.getProductsInlineKeyboardForAdmin(productList, 1);
+            sendMessage(null, productsInlineKeyboardForAdmin, "PRODUCTS LIST", chatId);
+            user.setStep(SHOW_PRODUCTS_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (text.equals(UPDATE_PRODUCT)) {
+            InlineKeyboardMarkup productsInlineKeyboardForAdmin = inlineKeyboardServise.getProductsInlineKeyboardForAdmin(productList, 1);
+            sendMessage(null, productsInlineKeyboardForAdmin, "PRODUCTS LIST", chatId);
+            sendMessage(null, null, "ENTER PRODUCT ID AFTER SET 'P' AND ENTER NEW PRICE ", chatId);
+            user.setStep(UPDATE_PRODUCT_STEP);
+            writeUsersToFile(telegramUsers);
         } else if (text.equals(BACK)) {
-             forAdmin(chatId);
-         }
+            forAdmin(chatId);
+            user.setStep(MAIN_STEP);
+            writeUsersToFile(telegramUsers);
+        } else if (user.getStep() != null && user.isAdmin() && user.getStep().equals(DELETE_PRODUCT_STEP)) {
+            int i = Integer.parseInt(text);
+            Product deletedProduct = productService.getById(i);
+            productList.remove(deletedProduct);
+            writeProductToFile(productList);
+            sendMessage(null, null, deletedProduct.getModel() + " deleted", chatId);
+        } else if (user.getStep() != null && user.isAdmin() && user.getStep().equals(DELETE_CATEGORY_STEP)) {
+            int i = Integer.parseInt(text);
+            Category deletedCategory = categoryService.getById(i);
+            categoryList.remove(deletedCategory);
+            writeCategoryToFile(categoryList);
+            sendMessage(null, null, deletedCategory.getName() + " deleted", chatId);
+        } else if (user.getStep() != null && user.isAdmin() && user.getStep().equals(ADD_CATEGORY_STEP)) {
+            Category category = new Category();
+            category.setName(text);
+            category.setParentId(0);
+            categoryService.add(category);
+            categoryList.add(category);
+         //   writeCategoryToFile(categoryList);
+            sendMessage(null, null, "SUCCESSFULLY ADDED", chatId);
+        } else if (user.getStep() != null && user.isAdmin() && user.getStep().equals(UPDATE_PRODUCT_STEP)) {
+            int p = text.indexOf('P');
+            String id = text.substring(0, p);
+            String price = text.substring(p + 1);
+            int i = Integer.parseInt(id);
+            double newPrice = Double.parseDouble(price);
+            Product product = productService.getById(i);
+            product.setPrice(newPrice);
+            writeProductToFile(productList);
+            sendMessage(null, null, product.getName() + " updated price", chatId);
+        }
+        else if (user.getStep() != null && user.isAdmin() && user.getStep().equals(ADD_PRODUCT_STEP)) {
+            Product product = productService.addProductForAdmin(text);
+            sendMessage(null, null, "SUCCESSFULLY ADDED", chatId);
+            try {
+                productInfo1(product,"@OnlineB24");
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
+
     private ReplyKeyboardMarkup addReplyKeyboardMarkup(List<String> mainMenu) {
 
         ReplyKeyboardMarkup r = new ReplyKeyboardMarkup();

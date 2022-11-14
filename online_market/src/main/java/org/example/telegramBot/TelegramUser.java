@@ -13,4 +13,5 @@ public class TelegramUser extends Contact{
     private boolean isAdmin;
     private Double latitude;
     private Double longitude;
+    private String step;
 }
